@@ -7,5 +7,8 @@ await initMongoConnection();
 setupServer();
 
 };
-
+export const SORT_ORDER = {
+ASC: 'asc',
+DESC: 'desc',
+}
 startApp();
