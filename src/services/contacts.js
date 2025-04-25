@@ -6,17 +6,20 @@ import { SORT_ORDER } from "../../index.js";
 
 export const getContacts = () => ContactCollection.find();
 
-export const getContactById = id => ContactCollection.findOne({_id: id});
+export const getContactById = (id, userId) => ContactCollection.findOne({_id: id, userId});
 
 export const addContact = payload => ContactCollection.create(payload);
 
 
-export const updateContact = async(_id, payload, options = {})=> {
+export const updateContact = async(_id, userId, payload, options = {})=> {
     const {upsert} = options;
-    const rawResult = await ContactCollection.findOneAndUpdate({_id}, payload, {
+    const rawResult = await ContactCollection.findOneAndUpdate({ _id, userId },
+        payload,
+        {
         upsert,
         includeResultMetadata: true,
-    });
+        }
+    );
 
     if(!rawResult || !rawResult.value) return null;
 
@@ -26,32 +29,31 @@ export const updateContact = async(_id, payload, options = {})=> {
     };
 };
 
-export const deleteContactById = _id => ContactCollection.findOneAndDelete({_id});
+export const deleteContactById = (_id, userId) => ContactCollection.findOneAndDelete({_id,userId});
 
 export const getAllContacts = async ({
-    page = 1,
-    perPage = 10,
-    sortOrder = SORT_ORDER.ASC,
-    sortBy = '_id',
+  page = 1,
+  perPage = 10,
+  sortOrder = SORT_ORDER.ASC,
+  sortBy = '_id',
+  filters = {},
 }) => {
-const limit = perPage;
-const skip = (page - 1) * perPage;
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
 
-const contactsQuery = ContactCollection.find();
-const contactsCount = await ContactCollection.find()
-    .merge(contactsQuery)
-    .countDocuments();
+  const contactsQuery = ContactCollection.find(filters);
+  const contactsCount = await ContactCollection.find(filters).countDocuments();
 
-const contacts = await contactsQuery
-        .skip(skip)
-        .limit(limit)
-        .sort({ [sortBy]: sortOrder })
-        .exec();
+  const contacts = await contactsQuery
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder })
+    .exec();
 
-const paginationData = calculatePaginationData(contactsCount, perPage, page);
+  const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
-return {
+  return {
     data: contacts,
     ...paginationData,
-};
+  };
 };

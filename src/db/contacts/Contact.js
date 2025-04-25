@@ -2,7 +2,9 @@ import { Schema, model } from "mongoose";
 
 import { typeList, } from "../../constants/contacts.js";
 
-import { handleSaveError,setUpdateSettings } from "./hooks.js";
+import { handleSaveError, setUpdateSettings } from "./hooks.js";
+
+
 
 const contactSchema = new Schema({
     name: {
@@ -32,8 +34,9 @@ const contactSchema = new Schema({
         default:"personal"
     },
 
-    parentId: {
+    userId: {
         type: Schema.Types.ObjectId,
+        required:true,
         ref: 'users'
     },
 }, {versionKey:false, timestamps:true});

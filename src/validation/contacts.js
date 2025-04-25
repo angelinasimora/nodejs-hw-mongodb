@@ -6,12 +6,13 @@ import { isValidObjectId } from "mongoose";
 export const contactAddSchema = Joi.object({
     name: Joi.string().required().min(3).max(20).messages({
         "any.required": "Треба написати ім'я",
-        "string.base": "Напиши ім'я", }),
+        "string.base": "Напиши ім'я",
+    }),
     phoneNumber: Joi.string().required(),
     email: Joi.string().email().min(3).max(20),
     isFavourite: Joi.boolean(),
     contactType: Joi.string().valid(...typeList).default("personal").required(),
-     parentId: Joi.string().custom((value, helper) => {
+     userId: Joi.string().custom((value, helper) => {
 		    if (value && !isValidObjectId(value)) {
 		        return helper.message('Parent id should be a valid mongo id');
 		    }

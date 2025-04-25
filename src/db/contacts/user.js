@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import { handleSaveError, setUpdateSettings } from "./hooks.js";
 
 const usersSchema = new Schema({
     name: { type: String, required: true },
@@ -8,10 +9,12 @@ const usersSchema = new Schema({
     { timestamps: true, versionKey: false },
 );
 
-usersSchema.methods.toJSON = function () {
-    const obj = this.toObject();
-    delete obj.password;
-    return obj;
-};
+usersSchema.post('save', handleSaveError);
 
-export const UsersCollection = model("user", usersSchema);
+usersSchema.pre('findOneAndUpdate', setUpdateSettings);
+
+usersSchema.post('findOneAndUpdate', handleSaveError);
+
+const UserCollection = model("user", usersSchema);
+
+export default UserCollection;
