@@ -12,14 +12,19 @@ const setupSession = (res, session) => {
     expires: new Date(Date.now() + ONE_DAY),
   });
 };
-export const registerUserController = async(req, res)=> {
-    await registerUser(req.body);
+export const registerUserController = async (req, res) => {
+    const newUser = await registerUser(req.body);
 
     res.status(201).json({
-        status: 201,
-        message: "Successfully register user",
+        status: "success",
+        message: "Successfully registered a user!",
+        data: {
+            _id: newUser._id,
+            email: newUser.email,
+        },
     });
 };
+
 
 export const loginUserController = async(req, res)=> {
     const session = await loginUser(req.body);
