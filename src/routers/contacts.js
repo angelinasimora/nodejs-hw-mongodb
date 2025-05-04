@@ -22,18 +22,11 @@ router.get("/",ctrlWrapper(getContactsController));
 
 router.get("/:id",isValidId, ctrlWrapper(getContactByIdController));
 
-// router.post("/",
-//   upload.single('photo'),
-//   validateBody(contactAddSchema), ctrlWrapper(addContactController));
+router.post("/",
+  upload.single('photo'),
+  validateBody(contactAddSchema), ctrlWrapper(addContactController));
 
-// router.patch(
-//   '/:id',
-//   isValidId,
-//   upload.single('photo'),
-//   validateBody(contactUpdateSchema),
-//   ctrlWrapper(patchContactController),
-// );
-router.post("/",validateBody(contactAddSchema),ctrlWrapper(addContactController));
+// router.post("/",validateBody(contactAddSchema),ctrlWrapper(addContactController));
 
 router.patch("/:id",
   isValidId, upload.single ('photo'), validateBody(contactUpdateSchema), ctrlWrapper(patchContactController));
