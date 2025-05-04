@@ -2,6 +2,7 @@ import {Router} from "express";
 
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 
+import { upload } from "../middlewares/multer.js";
 
 import {
   getContactsController, getContactByIdController, addContactController,
@@ -21,10 +22,22 @@ router.get("/",ctrlWrapper(getContactsController));
 
 router.get("/:id",isValidId, ctrlWrapper(getContactByIdController));
 
+// router.post("/",
+//   upload.single('photo'),
+//   validateBody(contactAddSchema), ctrlWrapper(addContactController));
+
+// router.patch(
+//   '/:id',
+//   isValidId,
+//   upload.single('photo'),
+//   validateBody(contactUpdateSchema),
+//   ctrlWrapper(patchContactController),
+// );
 router.post("/",validateBody(contactAddSchema),ctrlWrapper(addContactController));
 
 router.patch("/:id",
-  isValidId, validateBody(contactUpdateSchema), ctrlWrapper(patchContactController));
+  isValidId, upload.single ('photo'), validateBody(contactUpdateSchema), ctrlWrapper(patchContactController));
+
 
 router.delete("/:id", isValidId, ctrlWrapper(deleteContactController));
 

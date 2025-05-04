@@ -4,8 +4,12 @@ import { randomBytes } from 'crypto';
 
 import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/auth.js";
 
-import SessionsCollection from "../db/contacts/session.js";
-import { UsersCollection } from "../db/contacts/Contact.js";
+import SessionCollection from "../db/contacts/session.js";
+import  UsersCollection  from "../db/contacts/user.js";
+
+import { getEnvVar } from "../utils/getEnvVar.js";
+import jwt from 'jsonwebtoken';
+import { sendEmail } from "./emailService.js";
 
 
 const createSession = () => {
@@ -22,9 +26,11 @@ const createSession = () => {
   };
 };
 
-export const findSession = query => SessionsCollection.findOne(query);
+export const findSession = query => SessionCollection.findOne(query);
 
 export const findUser = query => UsersCollection.findOne(query);
+
+const appDomain = getEnvVar('APP_DOMAIN');
 
 export const registerUser = async payload => {
     const {email, password} = payload;
@@ -36,7 +42,74 @@ export const registerUser = async payload => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    return await UsersCollection.create({...payload, password: hashPassword});
+  const newUser = await UsersCollection.create({
+    ...payload,
+    password: hashPassword,
+  });
+     return newUser;
+};
+
+export const requestResetToken = async (email) => {
+  const user = await UsersCollection.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+  const resetToken = jwt.sign(
+    {
+      sub: user._id,
+      email,
+    },
+    getEnvVar('JWT_SECRET'),
+    {
+      expiresIn: '5m',
+    },
+  );
+
+  try {
+    await sendEmail({
+      from: getEnvVar('SMTP_FROM'),
+      to: email,
+      subject: 'Reset your password',
+      html: `<p>Click <a href="${appDomain}/auth/reset-password?token=${resetToken}">here</a> to reset your password!</p>`,
+    });
+  } catch (error) {
+    console.log(error.message);
+
+    throw createHttpError(
+      500,
+      'Failed to send the email, please try again later.',
+    );
+  }
+};
+
+export const resetPassword = async (payload) => {
+  let entries;
+
+  try {
+    entries = jwt.verify(payload.token, getEnvVar('JWT_SECRET'));
+  } catch (err) {
+    if (err instanceof Error)
+      throw createHttpError(401, 'Token is expired or invalid.');
+    throw err;
+  }
+
+  const user = await UsersCollection.findOne({
+    email: entries.email,
+    _id: entries.sub,
+  });
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  const encryptedPassword = await bcrypt.hash(payload.password, 10);
+
+  await UsersCollection.updateOne(
+    { _id: user._id },
+    { password: encryptedPassword },
+  );
+
+  await SessionCollection.findOneAndDelete({ userId: user._id });
 };
 
 
@@ -47,23 +120,24 @@ export const loginUser = async payload => {
         throw createHttpError(401, "User not found");
     }
 
+    // if(!user.verify) {
+    //     throw createHttpError(401, "User not verified");
+    // }
+
     const passwordCompare = await bcrypt.compare(password, user.password);
     if(!passwordCompare) {
         throw createHttpError(401, "Email or password invalid");
     }
 
-    await SessionsCollection.findOneAndDelete({userId: user._id});
+    await SessionCollection.findOneAndDelete({userId: user._id});
 
     const session = createSession();
 
-    return SessionsCollection.create({
+    return SessionCollection.create({
         userId: user._id,
         ...session,
     });
 };
-
-export const logoutUser = sessionId => SessionsCollection.deleteOne({_id: sessionId});
-
 
 export const refreshUser = async ({refreshToken, sessionId})=> {
     const session = await findSession({refreshToken, _id: sessionId});
@@ -72,16 +146,18 @@ export const refreshUser = async ({refreshToken, sessionId})=> {
     }
 
     if(session.refreshTokenValidUntil < Date.now()) {
-        await SessionsCollection.findOneAndDelete({_id: session._id});
+        await SessionCollection.findOneAndDelete({_id: session._id});
         throw createHttpError(401, "Session token expired");
     }
 
-    await SessionsCollection.findOneAndDelete({_id: session._id});
+    await SessionCollection.findOneAndDelete({_id: session._id});
 
     const newSession = createSession();
 
-    return SessionsCollection.create({
+    return SessionCollection.create({
         userId: session.userId,
         ...newSession,
     });
-};
+  };
+
+  export const logoutUser = sessionId => SessionCollection.deleteOne({_id: sessionId});

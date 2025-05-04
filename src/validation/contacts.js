@@ -6,7 +6,7 @@ import { isValidObjectId } from "mongoose";
 export const contactAddSchema = Joi.object({
     name: Joi.string().required().min(3).max(20).messages({
         "any.required": "Треба написати ім'я",
-        "string.base": "Напиши ім'я",
+        "string.base":  "Напиши ім'я",
     }),
     phoneNumber: Joi.string().required(),
     email: Joi.string().email().min(3).max(20),

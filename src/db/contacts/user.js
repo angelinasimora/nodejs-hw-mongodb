@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { handleSaveError, setUpdateSettings } from "./hooks.js";
 
+
 const usersSchema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -15,6 +16,6 @@ usersSchema.pre('findOneAndUpdate', setUpdateSettings);
 
 usersSchema.post('findOneAndUpdate', handleSaveError);
 
-const UserCollection = model("user", usersSchema);
+const UsersCollection = model("user", usersSchema);
 
-export default UserCollection;
+export default UsersCollection;

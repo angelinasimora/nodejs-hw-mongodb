@@ -5,9 +5,7 @@ import { setupServer } from "./src/server.js";
 
 const startApp = async () => {
 await initMongoConnection();
-setupServer();
-
-
+    setupServer();
 };
 export const SORT_ORDER = {
 ASC: 'asc',

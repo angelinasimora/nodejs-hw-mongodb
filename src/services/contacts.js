@@ -4,9 +4,12 @@ import { calculatePaginationData } from "../utils/calculatePaginationData.js";
 
 import { SORT_ORDER } from "../../index.js";
 
+
+
 export const getContacts = () => ContactCollection.find();
 
 export const getContactById = (id, userId) => ContactCollection.findOne({_id: id, userId});
+
 
 export const addContact = payload => ContactCollection.create(payload);
 

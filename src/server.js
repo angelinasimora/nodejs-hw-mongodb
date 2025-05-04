@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { logger } from './middlewares/logger.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
@@ -7,7 +8,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import router from './routers/index.js';
 
 import { getEnvVar } from './utils/getEnvVar.js';
-import cookieParser from 'cookie-parser';
+import { UPLOAD_FILE_DIR } from './constants/index.js';
 
 
 export const setupServer = () => {
@@ -18,6 +19,7 @@ export const setupServer = () => {
     app.use(cookieParser());
     app.use(logger);
 
+    app.use('/auth/upload', express.static(UPLOAD_FILE_DIR));
 
     app.use(router);
 

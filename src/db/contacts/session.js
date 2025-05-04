@@ -4,7 +4,7 @@ import { handleSaveError, setUpdateSettings } from "./hooks.js";
 const sessionSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'users',
+    ref: 'user',
     required: true,
   },
   accessToken: {
@@ -33,6 +33,6 @@ sessionSchema.pre('findOneAndUpdate', setUpdateSettings);
 
 sessionSchema.post('findOneAndUpdate', handleSaveError);
 
-const SessionsCollection = model("session", sessionSchema);
+const SessionCollection = model("session", sessionSchema);
 
-export default SessionsCollection;
+export default SessionCollection;
