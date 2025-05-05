@@ -9,6 +9,7 @@ import router from './routers/index.js';
 
 import { getEnvVar } from './utils/getEnvVar.js';
 import { UPLOAD_FILE_DIR } from './constants/index.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 
 export const setupServer = () => {
@@ -23,6 +24,8 @@ export const setupServer = () => {
 
     app.use(router);
 
+    app.use('/api-docs', swaggerDocs());
+
     app.use(notFoundHandler);
 
     app.use(errorHandler);
@@ -34,9 +37,9 @@ export const setupServer = () => {
 
 };
 
-export const startServer = () => {
-    const app = express();
-    app.use(express.json());
-    app.use(cors());
-    app.use(cookieParser());
-};
+// export const startServer = () => {
+//     const app = express();
+//     app.use(express.json());
+//     app.use(cors());
+//     app.use(cookieParser());
+// };
