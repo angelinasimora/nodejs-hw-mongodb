@@ -60,7 +60,7 @@ export const addContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
   const { id } = req.params;
   const userId = req.user._id;
-  let photo = null;
+  let photo;
 
   if (req.file) {
     photo=await saveFile(req.file);
