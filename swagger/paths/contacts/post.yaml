@@ -1,5 +1,3 @@
-#/swagger/paths/contacts/post.yaml
-
 tags:
   - Contacts
 summary: Create contact
@@ -28,7 +26,7 @@ requestBody:
           email:
             description: "Contact's email"
             type: string
-            example: 'andriy7@example.com'
+            example: 'andgeli7@example.com'
           isFavourite:
             description: 'Is contact favourite'
             type: boolean

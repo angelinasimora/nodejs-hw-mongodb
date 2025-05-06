@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: <назва вашого додатку>
+  title: My contacts
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  description: <опис вашого додатку>
+  description: API for my contacts
 tags:
-- name: Contacts
+  - name: Contacts
     description: Operations about users.
 servers:
   - url: http://localhost:3000
@@ -15,11 +15,12 @@ servers:
   #посилання на задеплоєний сайт
 paths:
   # тут будуть посилання на ендпоінти
-    /contacts:
+  /contacts:
     get:
       $ref: ../swagger/paths/contacts/get.yaml
     post:
       $ref: ../swagger/paths/contacts/post.yaml
+
   /contacts/{id}:
     get:
       $ref: ../swagger/paths/contacts/{id}/get.yaml
@@ -27,6 +28,7 @@ paths:
       $ref: ../swagger/paths/contacts/{id}/patch.yaml
     delete:
       $ref: ../swagger/paths/contacts/{id}/delete.yaml
+
 components:
   securitySchemes:
     bearerAuth:

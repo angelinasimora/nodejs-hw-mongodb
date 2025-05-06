@@ -49,6 +49,15 @@ router.post(
     ctrlWrapper(logoutUserController)
 );
 
+router.post(
+    "/get-google-auth-link",
+    ctrlWrapper(logoutUserController)
+);
+
+router.post(
+    "/login-with-google",
+    ctrlWrapper(logoutUserController)
+);
 export default router;
 
 

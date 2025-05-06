@@ -85,3 +85,16 @@ export const logoutUserController = async (req, res) => {
     res.status(204).send();
 };
 
+// export const getGoogleAuthLink=(req, res) => {
+//     res.json({
+//         status: 200,
+//         message: "Google auth link",
+//         data: {
+//             link: req.body.link,
+//         }
+//     });
+// };
+
+// export const signUpOrLoginWithGoogle = (req, res) => {
+
+// };
